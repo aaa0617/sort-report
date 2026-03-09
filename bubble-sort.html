@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<title>氣泡排序動畫</title>
+<style>
+body{
+    font-family: Arial;
+    text-align:center;
+}
+#container{
+    display:flex;
+    justify-content:center;
+    align-items:flex-end;
+    height:300px;
+    margin-top:40px;
+}
+.bar{
+    width:30px;
+    margin:5px;
+    background:steelblue;
+    color:white;
+    text-align:center;
+}
+button{
+    padding:10px 20px;
+    font-size:16px;
+}
+</style>
+</head>
+
+<body>
+
+<h2>氣泡排序動畫演示</h2>
+<button onclick="bubbleSort()">開始排序</button>
+
+<div id="container"></div>
+
+<script>
+let arr = [5,3,8,4,2,7,1,6];
+let container = document.getElementById("container");
+
+function draw(){
+    container.innerHTML="";
+    arr.forEach(value=>{
+        let bar=document.createElement("div");
+        bar.className="bar";
+        bar.style.height=value*30+"px";
+        bar.innerText=value;
+        container.appendChild(bar);
+    });
+}
+
+draw();
+
+async function bubbleSort(){
+    let bars=document.getElementsByClassName("bar");
+
+    for(let i=0;i<arr.length;i++){
+        for(let j=0;j<arr.length-i-1;j++){
+
+            bars[j].style.background="red";
+            bars[j+1].style.background="red";
+
+            await new Promise(r=>setTimeout(r,500));
+
+            if(arr[j] > arr[j+1]){
+                let temp=arr[j];
+                arr[j]=arr[j+1];
+                arr[j+1]=temp;
+                draw();
+            }
+
+            bars=document.getElementsByClassName("bar");
+            bars[j].style.background="steelblue";
+            bars[j+1].style.background="steelblue";
+        }
+    }
+}
+</script>
+
+</body>
+</html>
