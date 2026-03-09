@@ -1,0 +1,44 @@
+#include <stdio.h>
+
+// 交換兩個整數的函式
+void swap(int *a, int *b) {
+    int temp = *a;
+    *a = *b;
+    *b = temp;
+}
+
+// 氣泡排序函式
+void bubbleSort(int arr[], int n) {
+    for (int i = 0; i < n - 1; i++) {
+        // 最後 i 個元素已經排好了，所以內層迴圈可以減少次數
+        for (int j = 0; j < n - i - 1; j++) {
+            // 如果前面的比後面的大，就交換（升序排序）
+            if (arr[j] > arr[j + 1]) {
+                swap(&arr[j], &arr[j + 1]);
+            }
+        }
+    }
+}
+
+// 印出陣列的函式
+void printArray(int arr[], int size) {
+    for (int i = 0; i < size; i++) {
+        printf("%d ", arr[i]);
+    }
+    printf("\n");
+}
+
+int main() {
+    int data[] = {64, 34, 25, 12, 22, 11, 90};
+    int n = sizeof(data) / sizeof(data[0]);
+
+    printf("原始陣列: \n");
+    printArray(data, n);
+
+    bubbleSort(data, n);
+
+    printf("排序後的陣列: \n");
+    printArray(data, n);
+    
+    return 0;
+}
