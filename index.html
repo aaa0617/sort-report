@@ -1,44 +1,108 @@
-#include <stdio.h>
-
-// 交換兩個整數的函式
-void swap(int *a, int *b) {
-    int temp = *a;
-    *a = *b;
-    *b = temp;
-}
-
-// 氣泡排序函式
-void bubbleSort(int arr[], int n) {
-    for (int i = 0; i < n - 1; i++) {
-        // 最後 i 個元素已經排好了，所以內層迴圈可以減少次數
-        for (int j = 0; j < n - i - 1; j++) {
-            // 如果前面的比後面的大，就交換（升序排序）
-            if (arr[j] > arr[j + 1]) {
-                swap(&arr[j], &arr[j + 1]);
-            }
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>氣泡排序動畫演示</title>
+    <style>
+        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; background: #f0f2f5; }
+        .container { display: flex; align-items: flex-end; height: 300px; gap: 10px; margin-top: 50px; padding: 20px; background: white; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .bar {
+            width: 40px;
+            background-color: #3498db;
+            color: white;
+            text-align: center;
+            font-weight: bold;
+            transition: transform 0.3s, background-color 0.3s;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            padding-bottom: 5px;
+            border-radius: 4px 4px 0 0;
         }
-    }
-}
+        .comparing { background-color: #e74c3c !important; } /* 正在比較的顏色 */
+        .sorted { background-color: #2ecc71 !important; }   /* 已排序完成的顏色 */
+        .controls { margin-top: 30px; }
+        button { padding: 10px 20px; font-size: 16px; cursor: pointer; background: #2c3e50; color: white; border: none; border-radius: 5px; }
+        button:disabled { background: #95a5a6; }
+    </style>
+</head>
+<body>
 
-// 印出陣列的函式
-void printArray(int arr[], int size) {
-    for (int i = 0; i < size; i++) {
-        printf("%d ", arr[i]);
-    }
-    printf("\n");
-}
-
-int main() {
-    int data[] = {64, 34, 25, 12, 22, 11, 90};
-    int n = sizeof(data) / sizeof(data[0]);
-
-    printf("原始陣列: \n");
-    printArray(data, n);
-
-    bubbleSort(data, n);
-
-    printf("排序後的陣列: \n");
-    printArray(data, n);
+    <h2>氣泡排序法 (Bubble Sort) 動畫演示</h2>
     
-    return 0;
-}
+    <div class="container" id="array-container">
+        </div>
+
+    <div class="controls">
+        <button onclick="startSort()" id="startBtn">開始排序</button>
+        <button onclick="resetArray()">重置數組</button>
+    </div>
+
+    <script>
+        const container = document.getElementById('array-container');
+        let data = [64, 34, 25, 12, 22, 11, 90];
+        let bars = [];
+
+        // 初始化：根據數據生成長條圖
+        function resetArray() {
+            container.innerHTML = '';
+            bars = [];
+            data = Array.from({length: 10}, () => Math.floor(Math.random() * 90) + 10);
+            
+            data.forEach(value => {
+                const bar = document.createElement('div');
+                bar.classList.add('bar');
+                bar.style.height = `${value * 2.5}px`;
+                bar.innerText = value;
+                container.appendChild(bar);
+                bars.push(bar);
+            });
+            document.getElementById('startBtn').disabled = false;
+        }
+
+        // 延遲函式
+        const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+        // 氣泡排序主邏輯
+        async function startSort() {
+            document.getElementById('startBtn').disabled = true;
+            let n = bars.length;
+
+            for (let i = 0; i < n - 1; i++) {
+                for (let j = 0; j < n - i - 1; j++) {
+                    // 1. 標示正在比較的兩個元素 (變紅)
+                    bars[j].classList.add('comparing');
+                    bars[j + 1].classList.add('comparing');
+                    
+                    await sleep(400); // 停頓看結果
+
+                    // 2. 比較並交換
+                    let val1 = parseInt(bars[j].innerText);
+                    let val2 = parseInt(bars[j + 1].innerText);
+
+                    if (val1 > val2) {
+                        // 交換數值與高度
+                        let tempHeight = bars[j].style.height;
+                        let tempText = bars[j].innerText;
+
+                        bars[j].style.height = bars[j + 1].style.height;
+                        bars[j].innerText = bars[j + 1].innerText;
+
+                        bars[j + 1].style.height = tempHeight;
+                        bars[j + 1].innerText = tempText;
+                    }
+
+                    // 3. 移除比較標示
+                    bars[j].classList.remove('comparing');
+                    bars[j + 1].classList.remove('comparing');
+                }
+                // 4. 每一輪最後一個元素確定已排序 (變綠)
+                bars[n - i - 1].classList.add('sorted');
+            }
+            bars[0].classList.add('sorted');
+        }
+
+        resetArray(); // 初始執行一次
+    </script>
+</body>
+</html>
