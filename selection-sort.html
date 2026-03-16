@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<title>選擇排序動畫</title>
+<style>
+body{
+    font-family: Arial;
+    text-align:center;
+}
+#container{
+    display:flex;
+    justify-content:center;
+    align-items:flex-end;
+    height:300px;
+    margin-top:40px;
+}
+.bar{
+    width:30px;
+    margin:5px;
+    background:steelblue;
+    color:white;
+    text-align:center;
+}
+button{
+    padding:10px 20px;
+    font-size:16px;
+}
+input{
+    padding:5px;
+    font-size:16px;
+}button onclick="generateArray()">生成數組</button>
+<button onclick="selectionSort()">開始排序</button>
+
+<div id="container"></div>
+
+<script>
+let arr = [];
+let container = document.getElementById("container");
+
+function generateArray(){
+    let num = parseInt(document.getElementById("numElements").value);
+    arr = [];
+    for(let i=0; i<num; i++){
+        arr.push(Math.floor(Math.random()*10)+1);
+    }
+    draw();
+}
+
+function draw(){
+    container.innerHTML="";
+    arr.forEach(value=>{
+        let bar=document.createElement("div");
+        bar.className="bar";
+        bar.style.height=value*30+"px";
+        bar.innerText=value;
+        container.appendChild(bar);
+    });
+}
+
+generateArray();
+
+async function selectionSort(){
+    let bars=document.getElementsByClassName("bar");
+
+    for(let i=0; i<arr.length-1; i++){
+        let minIndex = i;
+        bars[minIndex].style.background="orange";
+
+        for(let j=i+1; j<arr.length; j++){
+            bars[j].style.background="red";
+            await new Promise(r=>setTimeout(r,500));
+
+            if(arr[j] < arr[minIndex]){
+                bars[minIndex].style.background="steelblue";
+                minIndex = j;
+                bars[minIndex].style.background="orange";
+            } else {
+                bars[j].style.background="steelblue";
+            }
+        }
+
+        if(minIndex !== i){
+            let temp = arr[i];
+            arr[i] = arr[minIndex];
+            arr[minIndex] = temp;
+            draw();
+            bars = document.getElementsByClassName("bar");
+        }
+
+        bars[minIndex].style.background="steelblue";
+        bars[i].style.background="green";
+    }
+    bars[arr.length-1].style.background="green";
+}
+</script>
+
+</body>
+</html>
+
+</style>
+</head>
+
+<body>
+
+<a href="index.html">回首頁</a>
+
+<h2>選擇排序動畫演示</h2>
+<label for="numElements">元素個數：</label>
+<input type="number" id="numElements" min="1" max="20" value="8">
+<
