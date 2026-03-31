@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>進階選擇排序動畫</title>
     <style>
+        /* 1. 基礎頁面樣式：設定為深色系並讓內容置中 */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #0f172a;
@@ -12,12 +13,21 @@
             padding: 20px;
             display: flex;
             flex-direction: column;
-            align-items: center;
+            align-items: center; /* 這行讓裡面所有東西(含回首頁)都置中 */
             min-height: 100vh;
         }
 
+        /* 2. 標題與連結樣式 */
         h2 { color: #38bdf8; margin-bottom: 20px; }
+        .back-link { 
+            color: #94a3b8; 
+            text-decoration: none; 
+            margin-bottom: 15px; 
+            transition: color 0.2s;
+        }
+        .back-link:hover { color: #38bdf8; }
 
+        /* 3. 統計資訊面板 (與氣泡排序相同) */
         #stats-container {
             display: flex;
             gap: 20px;
@@ -26,11 +36,13 @@
             padding: 15px 30px;
             border-radius: 12px;
             border: 1px solid #334155;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
         .stat-item { text-align: center; }
         .stat-value { font-size: 1.2em; font-weight: bold; color: #38bdf8; display: block; }
         .stat-label { font-size: 0.8em; color: #94a3b8; }
 
+        /* 4. 圖表容器 */
         #container {
             display: flex;
             justify-content: center;
@@ -45,10 +57,11 @@
             margin-bottom: 30px;
         }
 
+        /* 5. 長條圖樣式 */
         .bar {
             flex: 1;
             margin: 0 4px;
-            background: #38bdf8;
+            background: #38bdf8; /* 預設藍色 */
             border-radius: 4px 4px 0 0;
             transition: height 0.3s ease, background-color 0.2s;
             display: flex;
@@ -60,6 +73,7 @@
             color: white;
         }
 
+        /* 6. 按鈕樣式 */
         .controls { display: flex; gap: 15px; }
         button {
             background-color: #0284c7;
@@ -69,39 +83,38 @@
             border-radius: 8px;
             cursor: pointer;
             font-weight: 600;
+            transition: background 0.2s;
         }
         button:hover { background-color: #0ea5e9; }
         button:disabled { background-color: #475569; cursor: not-allowed; }
-        
-        .back-link { color: #94a3b8; text-decoration: none; margin-bottom: 10px; align-self: flex-start; }
     </style>
 </head>
 <body>
 
-<a href="index.html" class="back-link">← 回首頁</a>
-<h2>選擇排序法 Selection Sort</h2>
+    <a href="index.html" class="back-link">← 回首頁</a>
+    <h2>選擇排序法 Selection Sort</h2>
 
-<div id="stats-container">
-    <div class="stat-item">
-        <span id="compare-count" class="stat-value">0</span>
-        <span class="stat-label">比較次數</span>
+    <div id="stats-container">
+        <div class="stat-item">
+            <span id="compare-count" class="stat-value">0</span>
+            <span class="stat-label">比較次數</span>
+        </div>
+        <div class="stat-item">
+            <span id="swap-count" class="stat-value">0</span>
+            <span class="stat-label">交換次數</span>
+        </div>
+        <div class="stat-item">
+            <span id="array-size" class="stat-value">8</span>
+            <span class="stat-label">陣列大小</span>
+        </div>
     </div>
-    <div class="stat-item">
-        <span id="swap-count" class="stat-value">0</span>
-        <span class="stat-label">交換次數</span>
-    </div>
-    <div class="stat-item">
-        <span id="array-size" class="stat-value">8</span>
-        <span class="stat-label">陣列大小</span>
-    </div>
-</div>
 
-<div id="container"></div>
+    <div id="container"></div>
 
-<div class="controls">
-    <button id="start-btn" onclick="startSort()">開始排序</button>
-    <button id="reset-btn" onclick="resetArray()">隨機重置</button>
-</div>
+    <div class="controls">
+        <button id="start-btn" onclick="startSort()">開始排序</button>
+        <button id="reset-btn" onclick="resetArray()">隨機重置</button>
+    </div>
 
 <script>
     let arr = [];
@@ -109,11 +122,12 @@
     let swapCount = 0;
     const container = document.getElementById("container");
     const startBtn = document.getElementById("start-btn");
+    const resetBtn = document.getElementById("reset-btn");
 
-    // 初始化與重置陣列
+    // 重置並初始化陣列
     function resetArray() {
         arr = [];
-        const size = 8; // 固定為 8 個
+        const size = 8;
         for (let i = 0; i < size; i++) {
             arr.push(Math.floor(Math.random() * 90) + 10);
         }
@@ -122,6 +136,7 @@
         updateStats();
         draw();
         startBtn.disabled = false;
+        resetBtn.disabled = false;
     }
 
     function updateStats() {
@@ -129,68 +144,3 @@
         document.getElementById("swap-count").innerText = swapCount;
         document.getElementById("array-size").innerText = arr.length;
     }
-
-    function draw(scanningIdx = -1, minIdx = -1, sortedIdx = -1) {
-        container.innerHTML = "";
-        const maxVal = Math.max(...arr);
-        
-        arr.forEach((val, idx) => {
-            const bar = document.createElement("div");
-            bar.className = "bar";
-            bar.style.height = `${(val / maxVal) * 100}%`;
-            bar.innerText = val;
-
-            // 顏色邏輯
-            if (idx <= sortedIdx) {
-                bar.style.background = "#22c55e"; // 已排好 (綠)
-            } else if (idx === minIdx) {
-                bar.style.background = "#f59e0b"; // 當前最小 (黃)
-            } else if (idx === scanningIdx) {
-                bar.style.background = "#ef4444"; // 正在掃描 (紅)
-            }
-
-            container.appendChild(bar);
-        });
-    }
-
-    async function startSort() {
-        startBtn.disabled = true;
-        document.getElementById("reset-btn").disabled = true;
-        
-        let n = arr.length;
-        for (let i = 0; i < n; i++) {
-            let minIndex = i;
-            draw(-1, minIndex, i - 1);
-            await new Promise(r => setTimeout(r, 400));
-
-            for (let j = i + 1; j < n; j++) {
-                compareCount++;
-                updateStats();
-                draw(j, minIndex, i - 1);
-                await new Promise(r => setTimeout(r, 400));
-
-                if (arr[j] < arr[minIndex]) {
-                    minIndex = j;
-                    draw(-1, minIndex, i - 1);
-                    await new Promise(r => setTimeout(r, 400));
-                }
-            }
-
-            if (minIndex !== i) {
-                swapCount++;
-                updateStats();
-                [arr[i], arr[minIndex]] = [arr[minIndex], arr[i]];
-            }
-            draw(-1, -1, i); // 完成此輪
-            await new Promise(r => setTimeout(r, 400));
-        }
-        
-        document.getElementById("reset-btn").disabled = false;
-    }
-
-    // 頁面加載後自動執行一次初始化
-    window.onload = resetArray;
-</script>
-
-</body>
-</html>
