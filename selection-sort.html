@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>進階選擇排序動畫</title>
     <style>
-        /* 1. 基礎頁面樣式：設定為深色系並讓內容置中 */
+        /* 基礎頁面樣式 */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #0f172a;
@@ -13,21 +13,26 @@
             padding: 20px;
             display: flex;
             flex-direction: column;
-            align-items: center; /* 這行讓裡面所有東西(含回首頁)都置中 */
+            align-items: center; /* 確保內容水平置中 */
             min-height: 100vh;
         }
 
-        /* 2. 標題與連結樣式 */
-        h2 { color: #38bdf8; margin-bottom: 20px; }
+        /* 強力置中回首頁連結 */
         .back-link { 
             color: #94a3b8; 
             text-decoration: none; 
-            margin-bottom: 15px; 
+            margin: 0 auto 15px auto; /* 上 0, 左右自動, 下 15px */
+            display: table; /* 讓 margin: auto 生效 */
             transition: color 0.2s;
+            font-size: 0.95em;
         }
-        .back-link:hover { color: #38bdf8; }
+        .back-link:hover { 
+            color: #38bdf8; 
+        }
 
-        /* 3. 統計資訊面板 (與氣泡排序相同) */
+        h2 { color: #38bdf8; margin-top: 0; margin-bottom: 20px; text-align: center; }
+
+        /* 統計資訊面板 */
         #stats-container {
             display: flex;
             gap: 20px;
@@ -42,7 +47,7 @@
         .stat-value { font-size: 1.2em; font-weight: bold; color: #38bdf8; display: block; }
         .stat-label { font-size: 0.8em; color: #94a3b8; }
 
-        /* 4. 圖表容器 */
+        /* 圖表容器 */
         #container {
             display: flex;
             justify-content: center;
@@ -57,11 +62,10 @@
             margin-bottom: 30px;
         }
 
-        /* 5. 長條圖樣式 */
         .bar {
             flex: 1;
             margin: 0 4px;
-            background: #38bdf8; /* 預設藍色 */
+            background: #38bdf8;
             border-radius: 4px 4px 0 0;
             transition: height 0.3s ease, background-color 0.2s;
             display: flex;
@@ -73,7 +77,6 @@
             color: white;
         }
 
-        /* 6. 按鈕樣式 */
         .controls { display: flex; gap: 15px; }
         button {
             background-color: #0284c7;
@@ -124,11 +127,9 @@
     const startBtn = document.getElementById("start-btn");
     const resetBtn = document.getElementById("reset-btn");
 
-    // 重置並初始化陣列
     function resetArray() {
         arr = [];
-        const size = 8;
-        for (let i = 0; i < size; i++) {
+        for (let i = 0; i < 8; i++) {
             arr.push(Math.floor(Math.random() * 90) + 10);
         }
         compareCount = 0;
@@ -144,3 +145,54 @@
         document.getElementById("swap-count").innerText = swapCount;
         document.getElementById("array-size").innerText = arr.length;
     }
+
+    function draw(scanningIdx = -1, minIdx = -1, sortedIdx = -1) {
+        container.innerHTML = "";
+        const maxVal = Math.max(...arr);
+        arr.forEach((val, idx) => {
+            const bar = document.createElement("div");
+            bar.className = "bar";
+            bar.style.height = `${(val / maxVal) * 100}%`;
+            bar.innerText = val;
+            if (idx <= sortedIdx) bar.style.background = "#22c55e"; 
+            else if (idx === minIdx) bar.style.background = "#f59e0b";
+            else if (idx === scanningIdx) bar.style.background = "#ef4444";
+            container.appendChild(bar);
+        });
+    }
+
+    async function startSort() {
+        startBtn.disabled = true;
+        resetBtn.disabled = true;
+        let n = arr.length;
+        for (let i = 0; i < n; i++) {
+            let minIndex = i;
+            draw(-1, minIndex, i - 1);
+            await new Promise(r => setTimeout(r, 400));
+            for (let j = i + 1; j < n; j++) {
+                compareCount++;
+                updateStats();
+                draw(j, minIndex, i - 1);
+                await new Promise(r => setTimeout(r, 400));
+                if (arr[j] < arr[minIndex]) {
+                    minIndex = j;
+                    draw(-1, minIndex, i - 1);
+                    await new Promise(r => setTimeout(r, 400));
+                }
+            }
+            if (minIndex !== i) {
+                swapCount++;
+                updateStats();
+                [arr[i], arr[minIndex]] = [arr[minIndex], arr[i]];
+            }
+            draw(-1, -1, i);
+            await new Promise(r => setTimeout(r, 400));
+        }
+        resetBtn.disabled = false;
+    }
+
+    window.onload = resetArray;
+</script>
+
+</body>
+</html>
