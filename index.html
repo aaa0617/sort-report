@@ -1,21 +1,114 @@
 <!DOCTYPE html>
-<html lang="zh-tw">
+<html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>排序演算法</title>
+    <title>排序演算法學習平台</title>
+    <style>
+        /* 1. 漸層背景 */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Microsoft JhengHei, sans-serif;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            /* 使用漂亮的馬卡龍漸層色 */
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            overflow: hidden;
+        }
+
+        /* 2. 磨砂玻璃卡片容器 */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7); /* 半透明白色 */
+            backdrop-filter: blur(10px); /* 模糊背景效果 */
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15); /* 柔和陰影 */
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            text-align: center;
+        }
+
+        /* 3. 標題樣式 */
+        h1 {
+            color: #333;
+            font-size: 2rem;
+            margin-bottom: 30px;
+            letter-spacing: 2px;
+        }
+
+        /* 4. 列表樣式 */
+        .algo-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .algo-item {
+            margin-bottom: 15px;
+        }
+
+        /* 5. 連結按鈕化 */
+        .algo-link {
+            text-decoration: none;
+            color: #007bff;
+            font-size: 1.1rem;
+            font-weight: 500;
+            display: block;
+            padding: 12px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        /* 懸浮效果 */
+        .algo-link:hover {
+            background: rgba(0, 123, 255, 0.1);
+            color: #0056b3;
+            transform: translateY(-2px);
+        }
+
+        /* 裝飾性背景圓圈 (增加視覺深度) */
+        .bg-circle {
+            position: absolute;
+            z-index: -1;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+        }
+        .c1 { width: 300px; height: 300px; top: -50px; left: -50px; }
+        .c2 { width: 200px; height: 200px; bottom: -30px; right: -30px; }
+    </style>
 </head>
 <body>
-    <h1>排序演算法</h1>
-    <p>學習氣泡排序：</p>
-    <a href="bubble-sort.html" target="_blank">氣泡排序 (Bubble Sort)</a>
-    <p>學習選擇排序：</p>
-    <a href="selection-sort.html" target="_blank">選擇排序 (Selection Sort)</a>
-    <p>學習插入排序：</p>
-    <a href="insertion-sort.html" target="_blank">插入排序 (Insertion Sort)</a>
-    <p>學習合併排序：</p>
-    <a href="merge-sort.html" target="_blank">合併排序 (Merge Sort)</a>
-    <p>學習快速排序：</p>
-    <a href="quick-sort.html" target="_blank">快速排序 (Quick Sort)</a>
+
+    <div class="bg-circle c1"></div>
+    <div class="bg-circle c2"></div>
+
+    <div class="glass-card">
+        <h1>排序演算法</h1>
+        
+        <ul class="algo-list">
+            <li class="algo-item">
+                <a href="bubble-sort.html" class="algo-link">前往 Bubble Sort 頁面</a>
+            </li>
+            <li class="algo-item">
+                <a href="selection-sort.html" class="algo-link">前往 Selection Sort 頁面</a>
+            </li>
+            <li class="algo-item">
+                <a href="insertion-sort.html" class="algo-link">前往 Insertion Sort 頁面</a>
+            </li>
+            <li class="algo-item">
+                <a href="quick-sort.html" class="algo-link">前往 Quick Sort 頁面</a>
+            </li>
+            <li class="algo-item">
+                <a href="merge-sort.html" class="algo-link">前往 Merge Sort 頁面</a>
+            </li>
+        </ul>
+    </div>
+
 </body>
 </html>
