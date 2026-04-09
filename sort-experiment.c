@@ -3,16 +3,15 @@
 #include <stdlib.h>
 #include <string.h>
 
-// 【修改處】在此修改 N 的值，例如 1000, 10000, 20000 進行實驗 [cite: 13, 138]
-#define N 10000 
-
-// --- 排序演算法區 (在此加入五種排序法) ---
+#define N 1000
 
 void bubble_sort(int a[], int n) {
     for (int k = n - 1; k > 0; k--) {
         for (int i = 0; i < k; i++) {
             if (a[i] > a[i + 1]) {
-                int t = a[i]; a[i] = a[i + 1]; a[i + 1] = t;
+                int t = a[i];
+                a[i] = a[i + 1];
+                a[i + 1] = t;
             }
         }
     }
@@ -24,7 +23,9 @@ void selection_sort(int a[], int n) {
         for (int j = i + 1; j < n; j++) {
             if (a[j] < a[min_idx]) min_idx = j;
         }
-        int t = a[min_idx]; a[min_idx] = a[i]; a[i] = t;
+        int t = a[min_idx];
+        a[min_idx] = a[i];
+        a[i] = t;
     }
 }
 
@@ -40,32 +41,100 @@ void insertion_sort(int a[], int n) {
     }
 }
 
-// 快速排序與合併排序的遞迴實作... (略，請參考前一則回應)
+void merge(int a[], int left, int mid, int right, int temp[]) {
+    int i = left;
+    int j = mid + 1;
+    int k = left;
+    while (i <= mid && j <= right) {
+        if (a[i] <= a[j]) {
+            temp[k++] = a[i++];
+        } else {
+            temp[k++] = a[j++];
+        }
+    }
+    while (i <= mid) temp[k++] = a[i++];
+    while (j <= right) temp[k++] = a[j++];
+    for (i = left; i <= right; i++) {
+        a[i] = temp[i];
+    }
+}
 
-// --- 實驗核心邏輯 ---
+void merge_sort_recursive(int a[], int left, int right, int temp[]) {
+    if (left >= right) return;
+    int mid = left + (right - left) / 2;
+    merge_sort_recursive(a, left, mid, temp);
+    merge_sort_recursive(a, mid + 1, right, temp);
+    merge(a, left, mid, right, temp);
+}
+
+void merge_sort(int a[], int n) {
+    int *temp = malloc(n * sizeof(int));
+    if (temp == NULL) return;
+    merge_sort_recursive(a, 0, n - 1, temp);
+    free(temp);
+}
+
+int partition(int a[], int low, int high) {
+    int pivot = a[high];
+    int i = low - 1;
+    for (int j = low; j < high; j++) {
+        if (a[j] <= pivot) {
+            i++;
+            int t = a[i];
+            a[i] = a[j];
+            a[j] = t;
+        }
+    }
+    int t = a[i + 1];
+    a[i + 1] = a[high];
+    a[high] = t;
+    return i + 1;
+}
+
+void quick_sort_recursive(int a[], int low, int high) {
+    if (low < high) {
+        int pi = partition(a, low, high);
+        quick_sort_recursive(a, low, pi - 1);
+        quick_sort_recursive(a, pi + 1, high);
+    }
+}
+
+void quick_sort(int a[], int n) {
+    quick_sort_recursive(a, 0, n - 1);
+}
+
+void measure_sort(void (*sort_func)(int *, int), const char *name, int data[], int n) {
+    int *temp = malloc(n * sizeof(int));
+    if (temp == NULL) {
+        fprintf(stderr, "記憶體配置失敗\n");
+        return;
+    }
+    memcpy(temp, data, n * sizeof(int));
+
+    clock_t start = clock();
+    sort_func(temp, n);
+    clock_t end = clock();
+
+    double time_used = (double)(end - start) / CLOCKS_PER_SEC;
+    printf("%-15s: %.6f 秒\n", name, time_used);
+
+    free(temp);
+}
 
 int main() {
     int data[N];
-    clock_t start, end;
-    double time_used;
-
-    // 1. 初始化為完全逆序 (最差情況) [cite: 6, 71, 91]
-    for (int i = 0; i < N; i++) data[i] = N - i;
+    for (int i = 0; i < N; i++) {
+        data[i] = N - i;
+    }
 
     printf("實驗參數: N = %d\n", N);
     printf("--------------------------------------\n");
 
-    // 以氣泡排序為例的測量流程 [cite: 6, 101, 107]
-    int *temp = (int*)malloc(N * sizeof(int));
-    memcpy(temp, data, N * sizeof(int));
-    
-    start = clock(); // 計時開始 [cite: 102]
-    bubble_sort(temp, N);
-    end = clock(); // 計時結束 [cite: 107]
-    
-    time_used = (double)(end - start) / CLOCKS_PER_SEC; // 換算成秒 [cite: 6, 115]
-    printf("氣泡排序花費時間 = %.4f 秒\n", time_used); [cite: 113, 127]
+    measure_sort(bubble_sort, "Bubble Sort", data, N);
+    measure_sort(selection_sort, "Selection Sort", data, N);
+    measure_sort(insertion_sort, "Insertion Sort", data, N);
+    measure_sort(merge_sort, "Merge Sort", data, N);
+    measure_sort(quick_sort, "Quick Sort", data, N);
 
-    free(temp);
     return 0;
 }
